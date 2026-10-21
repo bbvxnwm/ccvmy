@@ -461,6 +461,14 @@ html.mi-hide body>*:not(#mi){display:none!important}
 html,body{overflow-x:hidden}
 @supports (overflow:clip){html,body{overflow-x:clip}}
 .m-card,.m-pill,.m-big{will-change:transform,opacity}
+/* ===== LITE: تخفيف تأثيرات الموقع (زجاج/بلور/حركات مستمرة) ===== */
+.bg-blob,.visual .halo{filter:none!important}
+@media (max-width:760px){.bg-blob{filter:none!important}}
+.sheet,.facts{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.sheet,.facts{background:var(--sheet-solid)}
+.visual .r2{animation:none}
+.card:not(.contact)::after{display:none}
+.spot{display:none!important}
 </style>
 </head>
 <body>
@@ -514,7 +522,7 @@ html,body{overflow-x:hidden}
 <linearGradient id="wd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe3ff"/><stop offset="1" stop-color="#f4f9ff"/></linearGradient>
 <filter id="ws" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="3"/></filter></defs>
 <rect width="800" height="900" fill="#dfe8fb"/>
-<g filter="url(#ws)"><path id="W0" fill="url(#wa)"/><path id="W1" fill="url(#wb)"/><path id="W2" fill="url(#wc)"/><path id="W3" fill="url(#wd)"/></g></svg></div></div></div>
+<g><path id="W0" fill="url(#wa)"/><path id="W1" fill="url(#wb)"/><path id="W2" fill="url(#wc)"/><path id="W3" fill="url(#wd)"/></g></svg></div></div></div>
 <div class="progress" aria-hidden="true"><i id="bar"></i></div>
 
 <header class="nav" id="nav">
@@ -721,7 +729,7 @@ function parallax(){if(reduce)return;const y=Math.min(scrollY,2400);par.forEach(
 function onScroll(){nav.classList.toggle('scrolled',scrollY>12);parallax();const h=document.documentElement.scrollHeight-innerHeight;bar.style.transform='scaleX('+(h>0?Math.min(scrollY/h,1):0)+')';fabs.classList.toggle('show',scrollY>400);tick=false;}
 addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(onScroll);}},{passive:true});onScroll();
 /* magnetic hero CTA — fine pointers only */
-if(matchMedia('(hover:hover) and (pointer:fine)').matches&&!reduce){const mb=$('.hero .btn-primary');if(mb){mb.addEventListener('pointermove',e=>{const r=mb.getBoundingClientRect();mb.style.translate=((e.clientX-r.left-r.width/2)*.18).toFixed(1)+'px '+((e.clientY-r.top-r.height/2)*.28).toFixed(1)+'px';});mb.addEventListener('pointerleave',()=>{mb.style.translate='';});}}
+if(false&&matchMedia('(hover:hover) and (pointer:fine)').matches&&!reduce){const mb=$('.hero .btn-primary');if(mb){mb.addEventListener('pointermove',e=>{const r=mb.getBoundingClientRect();mb.style.translate=((e.clientX-r.left-r.width/2)*.18).toFixed(1)+'px '+((e.clientY-r.top-r.height/2)*.28).toFixed(1)+'px';});mb.addEventListener('pointerleave',()=>{mb.style.translate='';});}}
 $('#topBtn').addEventListener('click',()=>scrollTo({top:0,behavior:reduce?'auto':'smooth'}));
 
 /* toast / copy / share */
@@ -782,9 +790,9 @@ function __siteMotion(){
   const cards=$$('.rv');
   cards.forEach(el=>el.classList.remove('rv'));
   touched.push(...cards);
-  gsap.set(cards,{opacity:0,y:36,scale:.95,filter:'blur(10px)'});
+  gsap.set(cards,{opacity:0,y:28});
   ScrollTrigger.batch(cards,{start:'top 90%',once:true,
-    onEnter:b=>gsap.to(b,{opacity:1,y:0,scale:1,filter:'blur(0px)',duration:1.15,ease:'back.out(1.5)',stagger:.08,overwrite:true,clearProps:'transform,opacity,filter'})});
+    onEnter:b=>gsap.to(b,{opacity:1,y:0,duration:.7,ease:'power3.out',stagger:.06,overwrite:true,clearProps:'transform,opacity'})});
 
   /* 4) حركة مرتبطة بالسكرول: الصورة تطفو ببطء أثناء الخروج من الهيرو */
   const vis=$('.visual');
@@ -835,9 +843,9 @@ if(!window.__miHold){__siteReveal();__siteMotion();}
       W[k].setAttribute('d','M0,900L'+pts.join('L')+'L800,900Z');
     }
   }
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches){draw(0);return;}
-  var st=performance.now(),co=matchMedia('(pointer:coarse)').matches,sk=0;
-  (function f(n){if(co&&(sk^=1)){requestAnimationFrame(f);return}draw((n-st)/1000);requestAnimationFrame(f)})(st);
+  draw(0);return; /* lite: خلفية ثابتة */
+  var st=performance.now();
+  (function f(n){draw((n-st)/1000);requestAnimationFrame(f)})(st);
 })();
 </script>
 <script>
@@ -853,7 +861,7 @@ if(!window.__miHold){__siteReveal();__siteMotion();}
   if(ag&&to){ag.textContent='0';var io=new IntersectionObserver(function(es){if(!es[0].isIntersecting)return;io.disconnect();var t0=performance.now();(function f(n){var p=Math.min((n-t0)/1300,1);ag.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(t0)});io.observe(ag);addEventListener('beforeprint',function(){ag.textContent=to})}
   /* طي الهيرو مع السكرول */
   var hero=$('.hero'),tk=false;
-  if(hero)addEventListener('scroll',function(){if(tk)return;tk=true;requestAnimationFrame(function(){hero.style.setProperty('--hp',Math.min(scrollY/520,1).toFixed(3));tk=false})},{passive:true});
+  if(false&&hero)addEventListener('scroll',function(){if(tk)return;tk=true;requestAnimationFrame(function(){hero.style.setProperty('--hp',Math.min(scrollY/520,1).toFixed(3));tk=false})},{passive:true});
   /* عناصر عائمة: اسحبها وترجع بنابض */
   $$('.float').forEach(function(el){
     var x=0,y=0,vx=0,vy=0,sx=0,sy=0,drag=false,raf=0;
@@ -867,7 +875,7 @@ if(!window.__miHold){__siteReveal();__siteMotion();}
     function up(){if(!drag)return;drag=false;raf=requestAnimationFrame(step)}
     el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
   });
-  if(!fine)return;
+  return; /* lite: بدون ميلان/لمعة/عمق مؤشر */
   /* ميلان البطاقات + لمعة تتبع المؤشر */
   $$('.card:not(.contact)').forEach(function(c){
     c.addEventListener('pointerenter',function(){c.classList.add('tilt')});
@@ -940,10 +948,10 @@ if(!window.__miHold){__siteReveal();__siteMotion();}
   /* ساعة بغداد */
   var clk=$('#clk');function tickClk(){if(!clk)return;try{clk.textContent='بغداد '+new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Baghdad'}).format(new Date())}catch(e){}}tickClk();setInterval(tickClk,20000);
   /* ضوء يتبع المؤشر */
-  var spot=$('#spot');if(spot&&!rm&&matchMedia('(hover:hover) and (pointer:fine)').matches){var q=false,px=0,py=0;
+  var spot=$('#spot');if(false&&spot&&!rm&&matchMedia('(hover:hover) and (pointer:fine)').matches){var q=false,px=0,py=0;
     addEventListener('pointermove',function(e){px=e.clientX;py=e.clientY;spot.classList.add('on');if(q)return;q=true;requestAnimationFrame(function(){spot.style.setProperty('--sx',px+'px');spot.style.setProperty('--sy',py+'px');q=false})},{passive:true});}
   /* تموّج عند الضغط */
-  if(!rm)document.addEventListener('pointerdown',function(e){var t=e.target.closest&&e.target.closest('.btn,.pill');if(!t)return;var r=t.getBoundingClientRect(),s=document.createElement('span');s.className='rip';s.style.left=(e.clientX-r.left)+'px';s.style.top=(e.clientY-r.top)+'px';t.appendChild(s);s.addEventListener('animationend',function(){s.remove()})},{passive:true});
+  if(false)document.addEventListener('pointerdown',function(e){var t=e.target.closest&&e.target.closest('.btn,.pill');if(!t)return;var r=t.getBoundingClientRect(),s=document.createElement('span');s.className='rip';s.style.left=(e.clientX-r.left)+'px';s.style.top=(e.clientY-r.top)+'px';t.appendChild(s);s.addEventListener('animationend',function(){s.remove()})},{passive:true});
   /* نبضة عند الضغط على الصورة */
   var ph=$('.photo');if(ph&&!rm)ph.addEventListener('click',function(){ph.animate([{scale:1},{scale:1.07},{scale:.98},{scale:1}],{duration:700,easing:'cubic-bezier(.3,1.4,.5,1)'});if(window.__snd)window.__snd.blip(880,.3)});
   /* لوحة الأوامر (Ctrl/⌘ + K) */
